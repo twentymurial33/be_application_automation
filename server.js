@@ -3,6 +3,9 @@ const multer = require("multer");
 const bodyParser = require("body-parser");
 const { extractKeywords } = require("./keywordExtractor");
 const { saveToDatabase } = require("./database");
+const { PrismaClient } = require("@prisma/client");
+
+const prisma = new PrismaClient();
 
 const app = express();
 const port = 5000;
