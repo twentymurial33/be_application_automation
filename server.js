@@ -1,12 +1,32 @@
 const express = require("express");
+const multer = require("multer");
+const bodyParser = require("body-parser");
+const { extractKeywords } = require("./keywordExtractor");
+const { saveToDatabase } = require("./database");
 
 const app = express();
-const PORT = 5000;
+const port = 5000;
 
-app.get("/", (req, res) => {
-  res.send("Hello from Express!");
+app.use(bodyParser.json());
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
+app.post("/upload", upload.single("resume"), async (req, res) => {
+  try {
+    const resumeBuffer = req.file.buffer;
+    const extractedKeywords = extractKeywords(resumeBuffer);
+    await saveToDatabase(extractedKeywords);
+    res.json({
+      message: "File uploaded and processed",
+      keywords: extractedKeywords,
+    });
+  } catch (error) {
+    console.error("Error processing file:", error);
+    res.status(500).json({ error: "Error processing file" });
+  }
 });
 
-app.listen(PORT, () => {
-  console.log("Server is running on port:" + PORT);
+app.listen(port, () => {
+  console.log(`Server running at http://localhost:${port}`);
 });
