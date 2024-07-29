@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 const bodyParser = require("body-parser");
+const apiRoutes = require("./routes/api");
 const { extractKeywords } = require("./keywordExtractor");
 const { saveToDatabase } = require("./database");
 const { PrismaClient } = require("@prisma/client");
@@ -11,6 +12,7 @@ const app = express();
 const port = 5000;
 
 app.use(bodyParser.json());
+app.use("/api", apiRoutes);
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
